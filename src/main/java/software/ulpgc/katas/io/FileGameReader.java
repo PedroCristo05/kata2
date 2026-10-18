@@ -28,6 +28,7 @@ public class FileGameReader implements GameReader {
                 .lines()
                 .skip(1)
                 .map(this::toGame)
+                .filter(game -> game != null)
                 .toList();
     }
 
@@ -36,13 +37,35 @@ public class FileGameReader implements GameReader {
     }
 
     private Game toGame(String[] fields) {
-        return new Game(
-                fields[1].trim(),
-                platformOf(fields[2].trim()),
-                fields[4].trim(),
-                Integer.parseInt(fields[3].trim()),
-                Double.parseDouble(fields[10].trim())
-        );
+        if (fields.length < 11) return null; // Control de fila incompleta
+
+        try {
+            return new Game(
+                    fields[1].trim(),
+                    platformOf(fields[2].trim()),
+                    fields[4].trim(),
+                    parseIntOrDefault(fields[3].trim(), 0),
+                    parseDoubleOrDefault(fields[10].trim(), 0.0)
+            );
+        } catch (Exception e) {
+            return null; // Si hay cualquier inconsistencia grave, se descarta la fila de forma controlada
+        }
+    }
+
+    private int parseIntOrDefault(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    private double parseDoubleOrDefault(String value, double defaultValue) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     private Platform platformOf(String field) {
