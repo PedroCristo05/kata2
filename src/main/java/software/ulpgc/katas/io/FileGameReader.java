@@ -23,7 +23,7 @@ public class FileGameReader implements GameReader {
         }
     }
 
-    private List<Game> loadFrom(InputStream is) {
+    public List<Game> loadFrom(InputStream is) {
         return new BufferedReader(new InputStreamReader(is))
                 .lines()
                 .skip(1)
