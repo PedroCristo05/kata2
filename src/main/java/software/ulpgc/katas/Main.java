@@ -6,6 +6,9 @@ import software.ulpgc.katas.model.Platform;
 import software.ulpgc.katas.service.GameStatistics;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -18,24 +21,28 @@ public class Main {
         // -----------------------------------------------------------------
         // CASO A: Fichero local
         // -----------------------------------------------------------------
-        // Puedes poner la ruta real a cualquier carpeta (ej. Descargas o Escritorio)
-        File externalFile = new File("vgsales.csv");
+        File localFile = new File("vgsales.csv");
 
-        if (externalFile.exists()) {
-            System.out.println("======== 1. Leyendo localmente (muestra pequeña) ========");
-            List<Game> gamesFromLocal = new FileGameReader(externalFile).load();
-            Map<Platform, Long> localSummary = GameStatistics.countByPlatform(gamesFromLocal);
-            writer.write(localSummary, System.out);
-        } else {
-            System.out.println("Nota: " + externalFile.getPath() + " no existe aún, usando ruta del proyecto.");
-            List<Game> gamesFromProject = new FileGameReader(new File("vgsales.csv")).load();
-            writer.write(GameStatistics.countByPlatform(gamesFromProject), System.out);
+        System.out.println("======== 1. Leyendo localmente (muestra vgsales.csv) ========");
+        List<Game> gamesFromLocal = new FileGameReader(localFile).load();
+        Map<Platform, Long> localSummary = GameStatistics.countByPlatform(gamesFromLocal);
+
+        // Destino 1: Consola (System.out)
+        System.out.println("\n--- Salida por Consola ---");
+        writer.write(localSummary, System.out);
+
+        // Destino 2: Fichero en disco (FileOutputStream)
+        try (OutputStream fileOutput = new FileOutputStream("summary.txt")) {
+            writer.write(localSummary, fileOutput);
+            System.out.println("Resumen exportado con éxito a summary.txt");
+        } catch (IOException e) {
+            System.err.println("Error al guardar el resumen en fichero: " + e.getMessage());
         }
 
         // -----------------------------------------------------------------
-        // CASO B: Lectura directa desde URL pública de Internet
+        // CASO B: Lectura directa desde URL pública
         // -----------------------------------------------------------------
-        System.out.println("\n=== 2. Leyendo desde URL pública (fichero original) ===");
+        System.out.println("\n=== 2. Leyendo desde URL pública (dataset completo) ===");
         URL remoteUrl = URI.create("https://raw.githubusercontent.com/molatosekgobela/Data-Science-Video-games-sales-dataset/main/vgsales.csv").toURL();
 
         GameReader urlReader = new UrlGameReader(remoteUrl);
