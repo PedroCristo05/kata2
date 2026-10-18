@@ -20,7 +20,8 @@ public class UrlGameReader implements GameReader {
         try (InputStream is = url.openStream()) {
             return new FileGameReader(null).loadFrom(is);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Aviso: No se pudo conectar a la URL o el recurso no existe -> " + url);
+            return List.of();
         }
     }
 }

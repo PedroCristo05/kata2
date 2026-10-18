@@ -27,7 +27,6 @@ public class Main {
         Map<Platform, Long> localSummary = GameStatistics.countByPlatform(gamesFromLocal);
 
         // DESTINO 1: Consola (System.out)
-        System.out.println("\n--- Salida por Consola (System.out) ---");
         writer.write(localSummary, System.out);
 
         // DESTINO 2: Fichero en disco (FileOutputStream)
@@ -50,5 +49,19 @@ public class Main {
         System.out.println("Total de juegos descargados y parseados: " + gamesFromUrl.size());
         Map<Platform, Long> urlSummary = GameStatistics.countByPlatform(gamesFromUrl);
         writer.write(urlSummary, System.out);
+
+        // -------------------------------------------------------------
+        // Demostración de error controlado (fichero inexistente)
+        // -------------------------------------------------------------
+        System.out.println("\n=== 3. Prueba de error controlado con fichero inexistente ===");
+        File nonExistentFile = new File("archivo_fantasma.csv");
+        List<Game> emptyGames = new FileGameReader(nonExistentFile).load();
+
+        // -------------------------------------------------------------
+        // Demostración de error controlado con URL rota / inválida
+        // -------------------------------------------------------------
+        System.out.println("\n=== 4. Prueba de error controlado con URL inválida ===");
+        URL brokenUrl = URI.create("https://raw.githubusercontent.com/molatosekgobela/Data-Science-Video-games-sales-dataset/main/url_inexistente.csv").toURL();
+        List<Game> gamesFromBrokenUrl = new UrlGameReader(brokenUrl).load();
     }
 }

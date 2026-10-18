@@ -18,8 +18,12 @@ public class FileGameReader implements GameReader{
     public List<Game> load() {
         try (InputStream is = new FileInputStream(file)) {
             return loadFrom(is);
+        } catch (FileNotFoundException e) {
+            System.out.println("Aviso: El archivo no existe o la ruta es inválida -> " + file.getPath());
+            return List.of();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error de lectura al procesar el archivo -> " + e.getMessage());
+            return List.of();
         }
     }
 
