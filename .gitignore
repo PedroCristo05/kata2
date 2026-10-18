@@ -10,6 +10,7 @@ bin/
 *.war
 *.log
 .idea/
+summary.txt
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
